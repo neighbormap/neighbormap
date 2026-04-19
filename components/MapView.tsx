@@ -64,7 +64,7 @@ export default function MapView({ neighborhoods }: MapViewProps) {
 
       {/* Hover tooltip card */}
       {hoverNeighborhood && (
-        <div className="absolute bottom-6 left-6 z-[1000] bg-white rounded-2xl shadow-lg p-4 border border-inchiostro/[0.06] min-w-[240px] pointer-events-none">
+        <div className="absolute top-20 left-6 z-[1000] bg-white rounded-2xl shadow-lg p-4 border border-inchiostro/[0.06] min-w-[240px] pointer-events-none">
           <p className="text-xs text-pietra mb-1">{hoverNeighborhood.zone}</p>
           <div className="flex items-center justify-between gap-3">
             <h3 className="font-bold text-inchiostro text-base">
