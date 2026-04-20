@@ -89,6 +89,7 @@ export async function submitAnonymousReview(params: {
       text_comment: params.textComment,
       reviewer_name: params.reviewerName,
       user_id: null,
+      anonymous_session_id: crypto.randomUUID(),
     })
     .select('id')
     .single();
