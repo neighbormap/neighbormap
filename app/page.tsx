@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import WaitlistForm from '@/components/WaitlistForm';
-import PhoneMockup from '@/components/PhoneMockup';
 
 export default function HomePage() {
   return (
@@ -44,9 +43,10 @@ export default function HomePage() {
 
             {/* Right: phone mockup */}
             <div className="flex justify-center md:justify-end">
-              <PhoneMockup
+              <img
                 src="/screenshot-1.png"
                 alt="NeighborMap mobile app — map view with personalized reviews"
+                className="w-full max-w-md md:max-w-lg h-auto"
               />
             </div>
           </div>
@@ -144,20 +144,20 @@ export default function HomePage() {
               </p>
             </div>
             <div className="order-1 md:order-2 flex justify-center">
-              <PhoneMockup
+              <img
                 src="/screenshot-2.png"
                 alt="NeighborMap — neighborhood detail with personalized reviews"
-                variant="dark"
+                className="w-full max-w-md md:max-w-lg h-auto"
               />
             </div>
           </div>
 
           <div className="grid md:grid-cols-2 gap-10 md:gap-16 items-center">
             <div className="flex justify-center">
-              <PhoneMockup
+              <img
                 src="/screenshot-3.png"
                 alt="NeighborMap — compare two neighborhoods side by side"
-                variant="dark"
+                className="w-full max-w-md md:max-w-lg h-auto"
               />
             </div>
             <div>

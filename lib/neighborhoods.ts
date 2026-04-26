@@ -41,20 +41,47 @@ export async function fetchScoresForNeighborhood(
   return all.find((s) => s.neighborhood_id === neighborhoodId) ?? null;
 }
 
-/** Reviews for a neighborhood, most recent first */
+/** Reviews for a neighborhood, with public profile data joined.
+ *  Optional filters narrow by reviewer profile (excludes anonymous reviews when set).
+ *  Calls the get_reviews_with_profile RPC — RLS-bypassed via SECURITY DEFINER,
+ *  but only safe public columns are exposed. */
 export async function fetchReviews(
   neighborhoodId: string,
-  limit = 20,
-): Promise<Review[]> {
-  const { data, error } = await supabase
-    .from('reviews')
-    .select('*')
-    .eq('neighborhood_id', neighborhoodId)
-    .eq('status', 'active')
-    .order('created_at', { ascending: false })
-    .limit(limit);
+  options: {
+    limit?: number;
+    offset?: number;
+    filterReason?: string | null;
+    filterCountryCode?: string | null;
+    filterUniversityId?: string | null;
+  } = {},
+): Promise<ReviewWithProfile[]> {
+  const { data, error } = await supabase.rpc('get_reviews_with_profile', {
+    p_neighborhood_id: neighborhoodId,
+    p_filter_reason: options.filterReason ?? null,
+    p_filter_country_code: options.filterCountryCode ?? null,
+    p_filter_university_id: options.filterUniversityId ?? null,
+    p_limit: options.limit ?? 20,
+    p_offset: options.offset ?? 0,
+  });
   if (error) throw error;
-  return (data as Review[]) ?? [];
+  return (data as ReviewWithProfile[]) ?? [];
+}
+
+export interface ReviewWithProfile {
+  review_id: string;
+  neighborhood_id: string;
+  review_type: 'overall' | 'detailed';
+  overall_score: number;
+  text_comment: string | null;
+  duration: string;
+  reviewer_name: string | null;
+  created_at: string;
+  // Null for anonymous reviews
+  profile_reason: string | null;
+  profile_country_code: string | null;
+  profile_university_name: string | null;
+  profile_display_name: string | null;
+  profile_avatar_url: string | null;
 }
 
 export async function fetchReviewScores(reviewIds: string[]): Promise<ReviewScore[]> {

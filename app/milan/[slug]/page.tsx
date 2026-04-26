@@ -59,9 +59,9 @@ export default async function NeighborhoodPage({
 
   const [scores, reviews] = await Promise.all([
     fetchScoresForNeighborhood(neighborhood.id),
-    fetchReviews(neighborhood.id, 20),
+    fetchReviews(neighborhood.id, { limit: 20 }),
   ]);
-  const scoresByReview = await fetchReviewScores(reviews.map((r) => r.id));
+  const scoresByReview = await fetchReviewScores(reviews.map((r) => r.review_id));
 
   // Group review scores by review id
   const scoresByReviewId = new Map<string, Map<ScoreCategory, { value: number; text: string | null }>>();
@@ -221,18 +221,22 @@ export default async function NeighborhoodPage({
         ) : (
           <div className="grid md:grid-cols-2 gap-4">
             {reviews.map((r) => {
-              const catScores = scoresByReviewId.get(r.id);
+              const catScores = scoresByReviewId.get(r.review_id);
+              const displayName =
+                r.reviewer_name || r.profile_display_name || 'Anonymous';
+              const profileTag = formatProfileTag(r);
               return (
                 <div
-                  key={r.id}
+                  key={r.review_id}
                   className="bg-white border border-inchiostro/[0.06] rounded-2xl p-5"
                 >
                   <div className="flex items-start justify-between gap-3 mb-2">
                     <div>
                       <p className="font-bold text-inchiostro">
-                        {r.reviewer_name || 'Anonymous'}
+                        {displayName}
                       </p>
                       <p className="text-xs text-pietra mt-0.5">
+                        {profileTag ? `${profileTag} · ` : ''}
                         {formatDuration(r.duration)}
                       </p>
                     </div>
@@ -289,4 +293,36 @@ function formatDuration(d: string): string {
     default:
       return d;
   }
+}
+
+/** Builds a short profile descriptor like "Bocconi student from Italy" or "Local from Italy".
+ *  Returns null for anonymous reviews (no profile data). */
+function formatProfileTag(r: {
+  profile_reason: string | null;
+  profile_country_code: string | null;
+  profile_university_name: string | null;
+}): string | null {
+  if (!r.profile_reason && !r.profile_country_code && !r.profile_university_name) {
+    return null;
+  }
+
+  const parts: string[] = [];
+
+  if (r.profile_reason === 'study' && r.profile_university_name) {
+    parts.push(`${r.profile_university_name} student`);
+  } else if (r.profile_reason === 'work') {
+    parts.push('Working in Milan');
+  } else if (r.profile_reason === 'visiting') {
+    parts.push('Visiting');
+  } else if (r.profile_reason === 'local') {
+    parts.push('Local');
+  } else if (r.profile_reason === 'other') {
+    parts.push('Other');
+  }
+
+  if (r.profile_country_code) {
+    parts.push(`from ${r.profile_country_code}`);
+  }
+
+  return parts.length > 0 ? parts.join(' ') : null;
 }

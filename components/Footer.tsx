@@ -60,9 +60,14 @@ export default function Footer() {
           <p className="text-xs text-white/40">
             © {new Date().getFullYear()} NeighborMap. Made in Milan.
           </p>
-          <p className="text-xs text-white/40">
-            Contact: <a href="mailto:hello@neighbormap.io" className="hover:text-white transition">hello@neighbormap.io</a>
-          </p>
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-6 text-xs text-white/40">
+            <p>
+              Contact: <a href="mailto:hello@neighbormap.io" className="hover:text-white transition">hello@neighbormap.io</a>
+            </p>
+            <p>
+              Report a review: <a href="mailto:support@neighbormap.io" className="hover:text-white transition">support@neighbormap.io</a>
+            </p>
+          </div>
         </div>
       </div>
     </footer>
